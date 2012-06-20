@@ -7,16 +7,16 @@ a='<xml><inventory><date>DATE</date><zones><zone><id>ZONE_ID</id><name>ZONE_NAME
 def parseResponse (code, root):
     res={};
     start=code.find (root)+len(root)+2
-    while(code[start]!='/'):
+    while(start!=0 and code[start]!='/'):
         end=code.find('>',start)
 
         key=code[start:end]
         res[key]= code[end+1:code.find('</'+key)]
 
-        start=code.find('</'+key)+len(key)+4
+        start=code.find('<',code.find('</'+key)+1)+1
     return res
 
-print parseResponse(a, 'inventory')
+print parseResponse(a, 'network')
 
 
 
