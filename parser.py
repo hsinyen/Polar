@@ -9,35 +9,37 @@ a='<xml><network><subdomain>SUBDOMAIN_NAME_HERE1</subdomain><id>NETWORK_ID_HERE1
 # end: end index of the dictionary value
 
 
-def parseResponse (code, root):
+def parseResponse(code, root):
 
-    if root == '!':  #if root is '!', it means that the dictionary is nested (see below)
-        if code.find('>') == -1: #value is a simple string; not nested
+    # If root is '!', it means that the dictionary is nested (see below):
+    if root == '!':
+        # If the value does not contain any '<', it means that it's a single
+        # string and not nested
+        if code.find('>') == -1:
             return code
-        else: #value is nested
+        else:
             start=1
     else:
-         list = code.split ('</' + root + '>')
+         list = code.split('</' + root + '>')
          if (len(list) > 2):
             dictList = []
-            for i in range (len(list) - 1):
+            for i in range(len(list) - 1):
                 dictList.append(parseResponse (list [i] , root))
 
             return dictList
 
-         start = code.find('<', code.find (root)) + 1
+         start = code.find('<', code.find(root)) + 1
 
     res = {};
 
     while(start != 0 and code[start] != '/'):
         end = code.find('>', start)
-        #print start,end,code
-        key=code[start:end]
+        key = code[start:end]
 
-        #pass the value into parseResponse in case that the value is nested
+        # Pass the value into parseResponse() in case that the value is nested
         res[key] = parseResponse(code[end+1:code.find('</' + key + '>')], '!')
 
-        start=code.find('<', code.find('</'+key) + 1) + 1
+        start = code.find('<', code.find('</' + key) + 1) + 1
     return res
 
 print parseResponse(a, 'network')
